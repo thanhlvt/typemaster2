@@ -335,3 +335,43 @@ body {
   color: var(--dim);
   font-size: 13px;
 }
+
+.continue-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 16px;
+  padding: 12px 28px;
+  background: rgba(93, 255, 157, 0.12);
+  border: 1.5px solid var(--good);
+  color: var(--good);
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.continue-btn:hover {
+  background: rgba(93, 255, 157, 0.22);
+}
+.continue-lives {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.reset-btn {
+  margin-top: 24px;
+  padding: 7px 18px;
+  background: transparent;
+  border: 1px solid rgba(255, 93, 110, 0.35);
+  color: rgba(255, 93, 110, 0.6);
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.reset-btn:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+  background: rgba(255, 93, 110, 0.08);
+}

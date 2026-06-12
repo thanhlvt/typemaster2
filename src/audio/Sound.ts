@@ -79,7 +79,7 @@ export class Sound {
 
   startMusic() {
     if (!this.bgAudio) {
-      this.bgAudio = new Audio('/bg.mp3');
+      this.bgAudio = new Audio('./bg.mp3');
       this.bgAudio.loop = true;
       this.bgAudio.volume = 0.2;
     }

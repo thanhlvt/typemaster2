@@ -71,16 +71,23 @@ export class Game {
     this.hud.hide();
     this.keyboard.hide();
     this.sound.stopMusic();
-    this.screens.showMenu({ onSelectLevel: (id) => this.startLevel(id) });
+    this.screens.showMenu({
+      onSelectLevel: (id) => this.startLevel(id),
+      onContinue: (session) => this.resumeSession(session),
+      onReset: () => {
+        Progress.reset();
+        this.showMenu();
+      },
+    });
   }
 
-  startLevel(levelId: number) {
+  startLevel(levelId: number, lives = START_LIVES) {
     const level = LEVELS.find((l) => l.id === levelId);
     if (!level) return;
     this.clearLevel();
     this.level = level;
     this.spawner = new EnemySpawner(level);
-    this.lives = START_LIVES;
+    this.lives = lives;
     this.stats.start();
     this.state = 'playing';
     this.input.enabled = true;
@@ -90,6 +97,11 @@ export class Game {
     this.keyboard.setEnabledKeys(level.keys);
     this.keyboard.show();
     this.sound.startMusic();
+    Progress.saveSession({ levelId, lives });
+  }
+
+  private resumeSession(session: { levelId: number; lives: number }) {
+    this.startLevel(session.levelId, session.lives);
   }
 
   private clearLevel() {
@@ -110,6 +122,7 @@ export class Game {
       accuracy: this.stats.accuracy,
       score: this.stats.score,
     });
+    Progress.clearSession();
     this.clearLevel();
     const hasNext = levelId < LEVELS.length;
     this.screens.showLevelComplete(this.stats, hasNext, {
@@ -125,6 +138,7 @@ export class Game {
     this.input.enabled = false;
     this.sound.stopMusic();
     this.sound.gameOver();
+    Progress.clearSession();
     this.clearLevel();
     this.screens.showGameOver(this.stats, {
       onRetry: () => this.startLevel(levelId),
@@ -162,7 +176,11 @@ export class Game {
     if (this.input.locked === enemy) this.input.releaseLock();
     this.spawner?.remove(enemy, this.sceneMgr.scene);
     this.lives--;
-    if (this.lives <= 0) this.gameOver();
+    if (this.lives <= 0) {
+      this.gameOver();
+    } else if (this.level) {
+      Progress.saveSession({ levelId: this.level.id, lives: this.lives });
+    }
   }
 
   // ===== Main loop =====

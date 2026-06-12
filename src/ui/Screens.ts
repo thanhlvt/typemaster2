@@ -1,9 +1,11 @@
 import { LEVELS } from '../lessons/lessons';
-import { Progress } from '../storage/Progress';
+import { Progress, type GameSession } from '../storage/Progress';
 import { Stats } from '../typing/Stats';
 
 export interface MenuCallbacks {
   onSelectLevel: (levelId: number) => void;
+  onContinue?: (session: GameSession) => void;
+  onReset?: () => void;
 }
 
 export class Screens {
@@ -24,13 +26,35 @@ export class Screens {
 
   showMenu(cb: MenuCallbacks) {
     const data = Progress.load();
+    const session = Progress.loadSession();
     const screen = document.createElement('div');
     screen.className = 'screen';
+
+    const continueHtml = session && cb.onContinue
+      ? `<button id="btn-continue" class="continue-btn">
+           ▶ Tiếp tục Level ${session.levelId}
+           <span class="continue-lives">${'♥'.repeat(session.lives)}</span>
+         </button>`
+      : '';
+
     screen.innerHTML = `
       <h1>TYPEMASTER 2</h1>
       <p class="subtitle">Luyện gõ 10 ngón — bắn hạ tàu địch bằng bàn phím của bạn</p>
+      ${continueHtml}
       <div id="level-grid"></div>
-      <p class="hint">Gõ chữ cái đầu của từ để khóa mục tiêu · gõ hết từ để tiêu diệt · đừng để tàu địch chạm vào bạn</p>`;
+      <p class="hint">Gõ chữ cái đầu của từ để khóa mục tiêu · gõ hết từ để tiêu diệt · đừng để tàu địch chạm vào bạn</p>
+      <button id="btn-reset" class="reset-btn">Xoá tiến trình</button>`;
+
+    if (session && cb.onContinue) {
+      screen.querySelector('#btn-continue')!
+        .addEventListener('click', () => cb.onContinue!(session));
+    }
+
+    screen.querySelector('#btn-reset')!.addEventListener('click', () => {
+      if (confirm('Xoá toàn bộ tiến trình và bắt đầu lại từ đầu?')) {
+        cb.onReset?.();
+      }
+    });
 
     const grid = screen.querySelector('#level-grid')!;
     for (const level of LEVELS) {
