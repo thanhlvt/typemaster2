@@ -43,16 +43,15 @@ export class HUD {
     this.elLevel.textContent = name;
   }
 
-  update(stats: Stats, lives: number, killsNeeded: number) {
+  /** progressPct overrides the kill-based bar (0–1). Used during boss fights. */
+  update(stats: Stats, lives: number, killsNeeded: number, progressPct?: number) {
     this.elScore.textContent = String(stats.score);
     this.elWpm.textContent = String(stats.wpm);
     this.elAcc.textContent = `${stats.accuracy}%`;
     this.elCombo.textContent = String(stats.combo);
     this.elLives.textContent = '♥'.repeat(Math.max(lives, 0));
-    this.elProgress.style.width = `${Math.min(
-      (stats.kills / killsNeeded) * 100,
-      100,
-    )}%`;
+    const pct = progressPct !== undefined ? progressPct : stats.kills / killsNeeded;
+    this.elProgress.style.width = `${Math.min(pct * 100, 100)}%`;
   }
 
   show() {

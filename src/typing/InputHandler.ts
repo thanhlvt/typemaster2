@@ -1,42 +1,34 @@
-import { EnemyShip } from '../game/EnemyShip';
+import type { Targetable } from '../game/Targetable';
 
 export interface InputEvents {
-  /** Gõ đúng một ký tự của mục tiêu đang khóa */
-  onHit: (enemy: EnemyShip) => void;
-  /** Gõ hết từ — tàu bị tiêu diệt */
-  onComplete: (enemy: EnemyShip) => void;
-  /** Gõ sai */
+  onHit: (target: Targetable) => void;
+  onComplete: (target: Targetable) => void;
   onMiss: () => void;
-  /** Bất kỳ phím a-z đầu tiên — dùng để khởi tạo AudioContext */
   onAnyKey?: () => void;
 }
 
 export class InputHandler {
   enabled = false;
-  locked: EnemyShip | null = null;
+  locked: Targetable | null = null;
 
   constructor(
-    private getEnemies: () => EnemyShip[],
+    private getTargets: () => Targetable[],
     private events: InputEvents,
   ) {
     window.addEventListener('keydown', this.onKeyDown);
   }
 
   /**
-   * Gọi mỗi frame: tự động khóa vào tàu địch gần nhất.
-   * Nếu đang có target hợp lệ thì không đổi.
+   * Called every frame. Always picks the nearest alive target so minions that
+   * fly in front of the boss during a boss fight automatically become the focus.
    */
   autoLockNearest() {
-    if (this.locked?.alive) return;
-    const enemies = this.getEnemies().filter((e) => e.alive);
-    if (enemies.length === 0) {
-      this.locked = null;
+    const alive = this.getTargets().filter(t => t.alive);
+    if (alive.length === 0) {
+      if (this.locked) { this.locked.setUnlocked(); this.locked = null; }
       return;
     }
-    // tàu có z lớn nhất = gần player nhất
-    const nearest = enemies.reduce((a, b) =>
-      a.position.z > b.position.z ? a : b,
-    );
+    const nearest = alive.reduce((a, b) => a.position.z > b.position.z ? a : b);
     if (nearest === this.locked) return;
     this.locked?.setUnlocked();
     nearest.setLocked();
@@ -58,7 +50,7 @@ export class InputHandler {
     this.handleKeyOnTarget(this.locked, c);
   };
 
-  private handleKeyOnTarget(target: EnemyShip, c: string) {
+  private handleKeyOnTarget(target: Targetable, c: string) {
     if (target.nextChar === c) {
       const complete = target.advance();
       this.events.onHit(target);

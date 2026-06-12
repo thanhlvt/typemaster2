@@ -199,15 +199,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 22px;
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding: 32px 20px 40px;
+  gap: 16px;
   background: rgba(2, 3, 10, 0.55);
   backdrop-filter: blur(3px);
   z-index: 10;
 }
 
 .screen h1 {
-  font-size: 52px;
+  font-size: 44px;
   letter-spacing: 4px;
   color: var(--accent);
   text-shadow: 0 0 24px rgba(77, 210, 255, 0.55);
@@ -283,21 +285,21 @@ body {
 /* level select grid */
 #level-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  max-width: 680px;
-  padding: 0 20px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: min(760px, 100%);
 }
 
 #level-grid .level-card {
   font-family: inherit;
-  padding: 10px 8px;
+  padding: 8px 6px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
   cursor: pointer;
   text-align: center;
+  overflow: hidden;
   transition: border-color 0.15s, transform 0.1s;
 }
 
@@ -307,28 +309,52 @@ body {
 }
 
 #level-grid .level-card .lv-num {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: var(--accent);
 }
 
 #level-grid .level-card .lv-keys {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--gold);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #level-grid .level-card .lv-best {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--dim);
-  margin-top: 3px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #level-grid .level-card:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+#level-grid .boss-card {
+  border-color: rgba(170, 34, 255, 0.35);
+  background: rgba(100, 20, 180, 0.18);
+}
+#level-grid .boss-card:hover:not(:disabled) {
+  border-color: #cc44ff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(170, 34, 255, 0.5);
+}
+#level-grid .boss-card .boss-num {
+  color: #cc44ff;
+  font-size: 16px;
+}
+#level-grid .boss-card .lv-keys {
+  color: rgba(170, 34, 255, 0.8);
+  letter-spacing: 2px;
 }
 
 .hint {
@@ -374,4 +400,55 @@ body {
   border-color: var(--bad);
   color: var(--bad);
   background: rgba(255, 93, 110, 0.08);
+}
+
+/* ===== Boss fight UI ===== */
+.boss-next-btn {
+  border-color: #cc44ff !important;
+  color: #cc44ff !important;
+  background: rgba(170, 34, 255, 0.15) !important;
+  text-shadow: 0 0 16px #cc44ff;
+  animation: boss-btn-pulse 1.6s ease-in-out infinite;
+}
+.boss-next-btn:hover {
+  background: rgba(170, 34, 255, 0.30) !important;
+}
+
+@keyframes boss-btn-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(170, 34, 255, 0.4); }
+  50%       { box-shadow: 0 0 28px rgba(170, 34, 255, 0.9); }
+}
+
+.boss-defeated-screen {
+  background: rgba(20, 5, 40, 0.88);
+  gap: 22px;
+}
+
+.boss-defeated-title {
+  font-size: 46px;
+  font-weight: bold;
+  color: #cc44ff;
+  letter-spacing: 3px;
+  text-shadow: 0 0 30px #cc44ff, 0 0 60px rgba(170, 34, 255, 0.5);
+  animation: boss-title-glow 2s ease-in-out infinite;
+}
+
+@keyframes boss-title-glow {
+  0%, 100% { text-shadow: 0 0 30px #cc44ff, 0 0 60px rgba(170, 34, 255, 0.5); }
+  50%       { text-shadow: 0 0 50px #cc44ff, 0 0 100px rgba(170, 34, 255, 0.8); }
+}
+
+.boss-reward {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--bad);
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px var(--bad);
+}
+
+.boss-lives {
+  font-size: 38px;
+  color: var(--bad);
+  letter-spacing: 10px;
+  text-shadow: 0 0 16px var(--bad);
 }

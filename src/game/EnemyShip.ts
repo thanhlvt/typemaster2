@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { Targetable } from './Targetable';
 
 const LABEL_W = 1280;
 const LABEL_H = 288;
@@ -10,7 +11,7 @@ const FONT_UNLOCKED = 'bold 92px Consolas, monospace';
 const SCALE_LOCKED = 9.6;
 const SCALE_UNLOCKED = 4.4;
 
-export class EnemyShip {
+export class EnemyShip implements Targetable {
   readonly group: THREE.Group;
   readonly word: string;
   typedCount = 0;
