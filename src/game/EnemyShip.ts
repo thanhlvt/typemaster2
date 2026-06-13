@@ -93,9 +93,9 @@ export class EnemyShip implements Targetable {
     return this.typedCount >= this.word.length;
   }
 
-  update(dt: number, target: THREE.Vector3, time: number) {
+  update(dt: number, target: THREE.Vector3, time: number, speedMult = 1) {
     const dir = target.clone().sub(this.group.position).normalize();
-    this.group.position.addScaledVector(dir, this.speed * dt);
+    this.group.position.addScaledVector(dir, this.speed * speedMult * dt);
     this.group.position.x += Math.sin(time * 1.5 + this.swayPhase) * 0.6 * dt;
     this.body.rotation.y += dt * 0.8;
     this.ring.rotation.z += dt * 1.2;

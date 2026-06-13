@@ -49,7 +49,7 @@ export class BossStage {
 
   get bossDefeated(): boolean { return !this.boss.alive; }
 
-  update(dt: number, playerPos: THREE.Vector3, elapsed: number) {
+  update(dt: number, playerPos: THREE.Vector3, elapsed: number, speedMult = 1) {
     if (!this.boss.alive) return;
 
     this.boss.update(dt, elapsed);
@@ -76,7 +76,7 @@ export class BossStage {
       }
     }
 
-    for (const m of this.minions) m.update(dt, playerPos, elapsed);
+    for (const m of this.minions) m.update(dt, playerPos, elapsed, speedMult);
   }
 
   removeMinion(enemy: EnemyShip) {

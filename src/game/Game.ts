@@ -46,6 +46,7 @@ export class Game {
   private lives = START_LIVES;
   private lastTime = 0;
   private elapsed  = 0;
+  private missPenaltyTimer = 0;
 
   constructor(container: HTMLElement) {
     this.sceneMgr   = new SceneManager(container);
@@ -154,7 +155,9 @@ export class Game {
     this.input.enabled = false;
     this.sound.levelUp();
     const levelId = this.level.id;
-    Progress.unlock(levelId + 1);
+    const isBossCheckpoint = levelId % BOSS_EVERY === 0 && levelId < LEVELS.length;
+    // Boss-checkpoint levels: hold next-level unlock until boss is defeated
+    if (!isBossCheckpoint) Progress.unlock(levelId + 1);
     Progress.recordBest(levelId, {
       wpm:      this.stats.wpm,
       accuracy: this.stats.accuracy,
@@ -162,8 +165,6 @@ export class Game {
     });
     Progress.clearSession();
     this.clearLevel();
-
-    const isBossCheckpoint = levelId % BOSS_EVERY === 0 && levelId < LEVELS.length;
     const hasNext = levelId < LEVELS.length;
 
     if (isBossCheckpoint) {
@@ -190,6 +191,7 @@ export class Game {
     this.sound.stopMusic();
     this.sound.levelUp();
     this.lives = Math.min(this.lives + 1, START_LIVES);
+    Progress.unlock(this.bossAfterLevelId + 1); // gate: only now does next level open
     this.bossStage?.clear();
     this.bossStage = null;
     this.screens.showBossDefeated(this.bossIndex, this.lives, {
@@ -262,6 +264,7 @@ export class Game {
   private onMiss() {
     this.stats.onMiss();
     this.sound.error();
+    this.missPenaltyTimer = 1.5;
   }
 
   private enemyReachedPlayer(enemy: EnemyShip) {
@@ -299,12 +302,15 @@ export class Game {
     this.lasers.update(dt);
     this.explosions.update(dt);
 
+    if (this.missPenaltyTimer > 0) this.missPenaltyTimer -= dt;
+    const speedMult = this.missPenaltyTimer > 0 ? 3.0 : 1.0;
+
     if (this.state === 'playing' && this.spawner && this.level) {
       this.spawner.update(dt, this.sceneMgr.scene);
       this.input.autoLockNearest();
 
       for (const enemy of [...this.spawner.enemies]) {
-        enemy.update(dt, this.player.position, this.elapsed);
+        enemy.update(dt, this.player.position, this.elapsed, speedMult);
         if (enemy.position.distanceTo(this.player.position) < HIT_DISTANCE) {
           this.enemyReachedPlayer(enemy);
         }
@@ -318,7 +324,7 @@ export class Game {
     }
 
     if (this.state === 'boss' && this.bossStage) {
-      this.bossStage.update(dt, this.player.position, this.elapsed);
+      this.bossStage.update(dt, this.player.position, this.elapsed, speedMult);
       this.input.autoLockNearest();
 
       // Check minions reaching player

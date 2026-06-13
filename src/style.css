@@ -386,19 +386,24 @@ body {
 }
 
 .reset-btn {
-  margin-top: 24px;
-  padding: 7px 18px;
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   background: transparent;
-  border: 1px solid rgba(255, 93, 110, 0.35);
-  color: rgba(255, 93, 110, 0.6);
-  font-size: 12px;
+  border: 1px solid rgba(255, 93, 110, 0.20);
+  color: rgba(255, 93, 110, 0.35);
+  font-size: 15px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
+  line-height: 1;
 }
 .reset-btn:hover {
-  border-color: var(--bad);
-  color: var(--bad);
+  border-color: rgba(255, 93, 110, 0.6);
+  color: rgba(255, 93, 110, 0.8);
   background: rgba(255, 93, 110, 0.08);
 }
 

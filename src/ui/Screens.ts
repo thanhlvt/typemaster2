@@ -44,7 +44,7 @@ export class Screens {
       ${continueHtml}
       <div id="level-grid"></div>
       <p class="hint">Gõ chữ cái đầu của từ để khóa mục tiêu · gõ hết từ để tiêu diệt · đừng để tàu địch chạm vào bạn</p>
-      <button id="btn-reset" class="reset-btn">Xoá tiến trình</button>`;
+      <button id="btn-reset" class="reset-btn" title="Xoá tiến trình">🗑</button>`;
 
     if (session && cb.onContinue) {
       screen.querySelector('#btn-continue')!
@@ -77,7 +77,7 @@ export class Screens {
       // Boss card after every 4th level
       if (level.id % 4 === 0 && level.id < LEVELS.length) {
         const bossIndex   = level.id / 4;
-        const bossUnlocked = data.unlocked > level.id;
+        const bossUnlocked = data.unlocked >= level.id;
         const bossBtn = document.createElement('button');
         bossBtn.className = 'level-card boss-card';
         bossBtn.disabled  = !bossUnlocked;
